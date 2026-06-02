@@ -1,0 +1,30 @@
+{
+    "gemini-2.5-pro": {
+        "type": "openai",
+        "azure_endpoint": "https://YOUR_AZURE_ENDPOINT/openai",
+        "api_version": "",
+        "api_key": "YOUR_API_KEY",
+        "qpm": 100
+    },
+    "gemini-2.5-flash": {
+        "type": "openai",
+        "azure_endpoint": "https://YOUR_AZURE_ENDPOINT/openai",
+        "api_version": "",
+        "api_key": "YOUR_API_KEY",
+        "qpm": 100
+    },
+    "gpt-4o-2024-11-20": {
+        "type": "openai",
+        "azure_endpoint": "https://YOUR_AZURE_ENDPOINT/openai",
+        "api_version": "",
+        "api_key": "YOUR_API_KEY",
+        "qpm": 100
+    },
+    "gemini-1.5-pro-002": {
+        "type": "openai",
+        "azure_endpoint": "https://YOUR_AZURE_ENDPOINT/openai",
+        "api_version": "",
+        "api_key": "YOUR_API_KEY",
+        "qpm": 100
+    }
+}
