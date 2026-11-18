@@ -115,18 +115,49 @@ class LongTermMemory:
         return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
     def to_string(self, memory_type="both", clip_ids=None):
+        # Preserve the historical fallback: unknown memory_type values behave as "both".
+        if memory_type not in ("episodic", "semantic", "both"):
+            memory_type = "both"
+
         if clip_ids is None:
-            clip_ids = [str(i) for i in range(len(self.semantic.knowledge))]
+            if memory_type == "episodic":
+                clip_ids = sorted(self.episodic.description.keys(), key=int)
+            elif memory_type == "semantic":
+                clip_ids = sorted(self.semantic.knowledge.keys(), key=int)
+            else:
+                # fix_interval_schedule() generates numeric string clip IDs.
+                clip_ids = sorted(
+                    set(self.episodic.description.keys())
+                    | set(self.semantic.knowledge.keys()),
+                    key=int,
+                )
+
         des, kno = [], []
         for clip_id in clip_ids:
-            des.append("{}-{}\n{}".format(self.format_second(int(clip_id) * self.interval), self.format_second((int(clip_id) + 1) * self.interval), self.episodic.description[clip_id]))
-            kno.extend(self.semantic.knowledge[clip_id])
+            if memory_type in ("episodic", "both"):
+                episodic = self.episodic.description.get(clip_id)
+                if episodic is not None:
+                    des.append(
+                        "{}-{}\n{}".format(
+                            self.format_second(int(clip_id) * self.interval),
+                            self.format_second((int(clip_id) + 1) * self.interval),
+                            episodic,
+                        )
+                    )
+
+            if memory_type in ("semantic", "both"):
+                semantic = self.semantic.knowledge.get(clip_id)
+                if semantic is not None:
+                    kno.extend(semantic)
+
         if memory_type == "episodic":
-            return "Description:\n\n{}".format("\n".join(kno))
+            return "Description:\n\n{}".format("\n\n".join(des))
         elif memory_type == "semantic":
             return "Knowledge:\n{}".format("\n".join(kno))
         else:
-            return "Description:\n\n{}\n\nKnowledge:\n{}".format("\n\n".join(des), "\n".join(kno))
+            return "Description:\n\n{}\n\nKnowledge:\n{}".format(
+                "\n\n".join(des), "\n".join(kno)
+            )
 
     def update_memory(self, clip_id, semantic_memory, episodic_memory):
         if episodic_memory is not None:
